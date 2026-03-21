@@ -1,0 +1,11 @@
+Install agent-orchestration-profiles from https://github.com/raomaster/agent-orchestration-profiles into this project.
+
+Requirements:
+- Copy the shared bundle from the repository templates into this repo:
+  - templates/MULTI_AGENT_RULES.md -> MULTI_AGENT_RULES.md
+  - templates/topology/sdf_topology.yaml -> topology/sdf_topology.yaml
+  - templates/commands/task-force.md -> commands/task-force.md
+- Add or update the integration file for these agents: codex, claude, copilot, opencode
+- Preserve existing instructions; append or refresh only the orchestration block
+- If AGENT_RULES.md or AGENT_RULES_LITE.md exists, reference it as mandatory policy inherited by all subagents
+- Show me which files were created or updated

@@ -28,6 +28,19 @@ Most agent setups document safety rules, but leave collaboration vague. This pro
 
 ## Install
 
+### Agent-native install
+
+If your coding agent can read GitHub repos or fetch raw files, you can install this project by giving it a single bootstrap instruction instead of running `npx`.
+
+Use the prompt in [AGENT_INSTALL.md](AGENT_INSTALL.md) or [prompts/bootstrap.txt](prompts/bootstrap.txt).
+
+Short version:
+
+```text
+Install agent-orchestration-profiles from https://github.com/raomaster/agent-orchestration-profiles into this project.
+Copy the shared bundle, update the integration files for codex/claude/copilot/opencode, preserve existing instructions, and make all subagents inherit AGENT_RULES.md when present.
+```
+
 ### npx
 
 ```bash
@@ -67,6 +80,15 @@ Agent-specific integration:
 - Claude Code -> `CLAUDE.md`
 - GitHub Copilot -> `.github/copilot-instructions.md`
 - OpenCode -> `.claude/rules/multi-agent.md`
+
+## Agent-first workflow
+
+This repository supports two installation styles:
+
+- `agent-native`: you paste a bootstrap prompt into the coding agent and it performs the install itself
+- `npx`: you run the installer directly
+
+The preferred workflow for agent-centric environments is `agent-native`.
 
 ## Project layout
 
