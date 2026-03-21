@@ -2,6 +2,8 @@
 
 This project can be installed directly by a coding agent, without `npx` and without asking the user to run shell installers manually.
 
+Its intended focus is stack installation by current agent, not just orchestration in isolation.
+
 The agent should:
 
 1. Fetch this repository or read its published files.
@@ -24,6 +26,12 @@ The agent should:
    - `.claude/agents/valkyrie-check.md`
    - `.claude/agents/barrier-review.md`
 7. If `oh-my-opencode` is detected, recommend `agent-security-policies` as a compatible companion install for security rules, skills, and Aegis.
+8. Prefer these security defaults when doing a full stack install:
+   - Codex -> `agent-security-policies` lite
+   - GitHub Copilot -> `agent-security-policies` lite
+   - Claude Code -> `agent-security-policies` full
+   - OpenCode -> `agent-security-policies` full
+   - OpenCode with `oh-my-opencode` -> `agent-security-policies --agent opencode --skills --omo`
 
 ## One-shot bootstrap prompt
 
@@ -41,7 +49,12 @@ Requirements:
 - Preserve existing instructions; append or refresh only the orchestration block
 - If AGENT_RULES.md or AGENT_RULES_LITE.md exists, reference it as mandatory policy inherited by all subagents
 - If the repo has an oh-my-opencode style layout, also install OpenCode command and agent files
-- If oh-my-opencode is detected, recommend installing agent-security-policies as a compatible companion
+- Then install agent-security-policies with an agent-appropriate profile:
+  - codex -> lite
+  - copilot -> lite
+  - claude -> full
+  - opencode -> full
+  - opencode with oh-my-opencode -> --agent opencode --skills --omo
 - Show me which files were created or updated
 ```
 

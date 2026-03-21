@@ -9,3 +9,4 @@
 - Auto-detection for oh-my-opencode style layouts
 - OpenCode-specific command and subagent templates
 - Companion recommendation for `agent-security-policies` in oh-my-opencode environments
+- Stack-aware install mode with agent-appropriate `agent-security-policies` profiles

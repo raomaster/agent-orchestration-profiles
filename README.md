@@ -45,6 +45,8 @@ Copy the shared bundle, update the integration files for codex/claude/copilot/op
 
 ```bash
 npx agent-orchestration-profiles --all
+npx agent-orchestration-profiles --agent codex --with-security auto
+npx agent-orchestration-profiles --agent claude --with-security full
 npx agent-orchestration-profiles --agent codex,claude
 npx agent-orchestration-profiles --agent opencode --target /path/to/project
 npx agent-orchestration-profiles --list
@@ -98,6 +100,31 @@ This repository supports two installation styles:
 - `npx`: you run the installer directly
 
 The preferred workflow for agent-centric environments is `agent-native`.
+
+## Stack-aware install
+
+This project can act as a stack installer, not just an orchestration installer.
+
+When `--with-security` is enabled, it also tries to install `agent-security-policies` with an agent-appropriate profile:
+
+- `codex` -> `lite` by default
+- `copilot` -> `lite` by default
+- `claude` -> `full` by default
+- `opencode` -> `full` by default
+- `opencode` with `oh-my-opencode` detected -> `--agent opencode --skills --omo`
+
+Examples:
+
+```bash
+# Codex stack: orchestration + security lite
+npx agent-orchestration-profiles --agent codex --with-security auto
+
+# Claude stack: orchestration + security full
+npx agent-orchestration-profiles --agent claude --with-security auto
+
+# OpenCode + oh-my-opencode stack
+npx agent-orchestration-profiles --agent opencode --with-security auto
+```
 
 ## oh-my-opencode compatibility
 

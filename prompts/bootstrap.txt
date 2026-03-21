@@ -9,5 +9,10 @@ Requirements:
 - Preserve existing instructions; append or refresh only the orchestration block
 - If AGENT_RULES.md or AGENT_RULES_LITE.md exists, reference it as mandatory policy inherited by all subagents
 - If the repo has an oh-my-opencode style layout, also install OpenCode command and agent files
-- If oh-my-opencode is detected, recommend installing agent-security-policies as a compatible companion
+- Then install agent-security-policies with an agent-appropriate profile:
+  - codex -> lite
+  - copilot -> lite
+  - claude -> full
+  - opencode -> full
+  - opencode with oh-my-opencode -> --agent opencode --skills --omo
 - Show me which files were created or updated

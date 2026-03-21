@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 
+import { spawnSync } from "node:child_process";
 import fs from "node:fs";
 import { fileURLToPath } from "node:url";
 import path from "node:path";
@@ -23,18 +24,21 @@ function printHelp() {
 Usage:
   npx ${PACKAGE_NAME} --all [--target PATH]
   npx ${PACKAGE_NAME} --agent codex,claude [--target PATH]
+  npx ${PACKAGE_NAME} --agent codex --with-security auto
   npx ${PACKAGE_NAME} --list
 
 Options:
   --all           Install integration files for all supported agents
   --agent LIST    Comma-separated list: codex, claude, copilot, opencode
   --target PATH   Target project directory (default: current directory)
+  --with-security Security companion mode: auto, lite, full, off
   --list          Show supported agents and generated files
   --help          Show this help
 
 Behavior:
   - Detects oh-my-opencode style layouts automatically
   - When oh-my-opencode is detected, installs OpenCode-specific commands and agents
+  - Can invoke agent-security-policies as part of a stack install
 `);
 }
 
@@ -43,6 +47,7 @@ function parseArgs(argv) {
     all: false,
     agents: [],
     target: process.cwd(),
+    withSecurity: "auto",
     list: false,
     help: false,
   };
@@ -65,6 +70,13 @@ function parseArgs(argv) {
       }
       result.target = path.resolve(value);
       i += 1;
+    } else if (arg === "--with-security") {
+      const value = argv[i + 1];
+      if (!value) {
+        throw new Error("--with-security requires a value: auto, lite, full, off");
+      }
+      result.withSecurity = value.trim().toLowerCase();
+      i += 1;
     } else if (arg === "--list") {
       result.list = true;
     } else if (arg === "--help" || arg === "-h") {
@@ -76,6 +88,10 @@ function parseArgs(argv) {
 
   if (result.all) {
     result.agents = [...SUPPORTED_AGENTS];
+  }
+
+  if (!["auto", "lite", "full", "off"].includes(result.withSecurity)) {
+    throw new Error("--with-security must be one of: auto, lite, full, off");
   }
 
   return result;
@@ -193,6 +209,50 @@ function installOhMyOpenCodeBundle(target) {
   return results;
 }
 
+function resolveSecurityPlan(agent, withSecurity, isOhMyOpenCode) {
+  if (withSecurity === "off") {
+    return null;
+  }
+
+  if (isOhMyOpenCode && agent === "opencode") {
+    return {
+      profile: withSecurity === "auto" ? "full" : withSecurity,
+      args: ["agent-security-policies", "--agent", "opencode", "--skills", "--omo"],
+    };
+  }
+
+  const profile = withSecurity === "auto"
+    ? (agent === "codex" || agent === "copilot" ? "lite" : "full")
+    : withSecurity;
+
+  return {
+    profile,
+    args: ["agent-security-policies", "--agent", agent, "--profile", profile],
+  };
+}
+
+function installSecurityCompanion(target, args) {
+  const runner = process.platform === "win32" ? "npx.cmd" : "npx";
+  const result = spawnSync(runner, args, {
+    cwd: target,
+    stdio: "pipe",
+    encoding: "utf8",
+  });
+
+  if (result.status === 0) {
+    return {
+      status: "installed",
+      detail: `npx ${args.join(" ")}`,
+    };
+  }
+
+  return {
+    status: "recommended",
+    detail: `npx ${args.join(" ")}`,
+    error: result.stderr?.trim() || result.stdout?.trim() || "security companion install failed",
+  };
+}
+
 function integrationBlock(agent) {
   if (agent === "codex") {
     return `Read and follow MULTI_AGENT_RULES.md for delegation and orchestration.
@@ -302,6 +362,15 @@ function main() {
     results.push(...installOhMyOpenCodeBundle(args.target));
   }
 
+  const securityPlans = [];
+  const seenAgents = new Set(args.agents);
+  for (const agent of seenAgents) {
+    const plan = resolveSecurityPlan(agent, args.withSecurity, isOhMyOpenCode);
+    if (plan) {
+      securityPlans.push({ agent, ...plan });
+    }
+  }
+
   console.log(`Installed ${PACKAGE_NAME} into ${args.target}`);
   if (isOhMyOpenCode) {
     console.log("- detected: oh-my-opencode compatible layout");
@@ -309,7 +378,20 @@ function main() {
   for (const [file, status] of results) {
     console.log(`- ${status}: ${file}`);
   }
-  if (isOhMyOpenCode) {
+
+  if (securityPlans.length > 0) {
+    console.log("");
+    console.log("Security companion:");
+    for (const plan of securityPlans) {
+      const companion = installSecurityCompanion(args.target, plan.args);
+      if (companion.status === "installed") {
+        console.log(`- installed for ${plan.agent} (${plan.profile}): ${companion.detail}`);
+      } else {
+        console.log(`- recommended for ${plan.agent} (${plan.profile}): ${companion.detail}`);
+        console.log(`  note: ${companion.error}`);
+      }
+    }
+  } else if (isOhMyOpenCode) {
     console.log("");
     console.log("Recommended companion install:");
     console.log("- npx agent-security-policies --agent opencode --skills --omo");
