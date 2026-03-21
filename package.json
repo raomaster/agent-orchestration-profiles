@@ -1,0 +1,20 @@
+{
+  "name": "agent-orchestration-profiles",
+  "version": "0.1.0",
+  "description": "Portable multi-agent orchestration profiles for Codex, Claude Code, GitHub Copilot, and OpenCode.",
+  "license": "Apache-2.0",
+  "type": "module",
+  "bin": {
+    "agent-orchestration-profiles": "./bin/agent-orchestration-profiles.js"
+  },
+  "files": [
+    "bin",
+    "templates",
+    "README.md",
+    "install.sh",
+    "install.ps1"
+  ],
+  "engines": {
+    "node": ">=18"
+  }
+}

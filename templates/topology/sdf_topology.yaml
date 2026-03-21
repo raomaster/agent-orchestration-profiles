@@ -1,0 +1,90 @@
+version: 1
+name: sdf-multi-agent-topology
+purpose: portable multi-agent coordination profile for coding projects
+complements:
+  - AGENT_RULES.md
+  - AGENT_RULES_LITE.md
+
+defaults:
+  primary_role: SDF-Command
+  max_parallel_subagents: 3
+  spawn_bias: conservative
+  wait_bias: only_when_blocked
+  inherit_security_rules: true
+
+roles:
+  - name: SDF-Command
+    type: coordinator
+    write_scope: integration
+    responsibilities:
+      - frame task
+      - maintain critical path
+      - integrate outputs
+      - verify completion
+      - produce final answer
+
+  - name: Valkyrie-Scan
+    type: explorer
+    write_scope: none
+    responsibilities:
+      - map code paths
+      - find definitions and usages
+      - identify hidden dependencies
+      - narrow task scope
+
+  - name: Valkyrie-Forge
+    type: worker
+    write_scope: bounded
+    responsibilities:
+      - implement isolated changes
+      - perform focused refactors
+      - fix scoped bugs
+
+  - name: Valkyrie-Check
+    type: validator
+    write_scope: tests_preferred
+    responsibilities:
+      - add tests
+      - validate regressions
+      - create repro cases
+      - run focused verification
+
+  - name: Barrier-Review
+    type: reviewer
+    write_scope: advisory
+    responsibilities:
+      - review diff risks
+      - challenge weak assumptions
+      - report findings by severity
+
+  - name: Archive-Note
+    type: documentation
+    write_scope: docs_only
+    responsibilities:
+      - update docs
+      - record migrations
+      - summarize workflows
+
+task_profiles:
+  - name: small
+    roles:
+      - SDF-Command
+  - name: discovery
+    roles:
+      - SDF-Command
+      - Valkyrie-Scan
+  - name: feature
+    roles:
+      - SDF-Command
+      - Valkyrie-Forge
+  - name: feature_with_validation
+    roles:
+      - SDF-Command
+      - Valkyrie-Forge
+      - Valkyrie-Check
+  - name: sensitive_change
+    roles:
+      - SDF-Command
+      - Valkyrie-Forge
+      - Valkyrie-Check
+      - Barrier-Review
