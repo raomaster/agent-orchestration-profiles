@@ -16,6 +16,14 @@ The agent should:
    - OpenCode -> `.claude/rules/multi-agent.md`
 4. Preserve existing user content and append or replace only the managed orchestration block.
 5. If `AGENT_RULES.md` or `AGENT_RULES_LITE.md` exists, reference it as mandatory policy for all agents and subagents.
+6. If the target repo looks like `oh-my-opencode`, also install:
+   - `.opencode/command/task-force.md`
+   - `.claude/agents/sdf-command.md`
+   - `.claude/agents/valkyrie-scan.md`
+   - `.claude/agents/valkyrie-forge.md`
+   - `.claude/agents/valkyrie-check.md`
+   - `.claude/agents/barrier-review.md`
+7. If `oh-my-opencode` is detected, recommend `agent-security-policies` as a compatible companion install for security rules, skills, and Aegis.
 
 ## One-shot bootstrap prompt
 
@@ -32,6 +40,8 @@ Requirements:
 - Add or update the integration file for these agents: codex, claude, copilot, opencode
 - Preserve existing instructions; append or refresh only the orchestration block
 - If AGENT_RULES.md or AGENT_RULES_LITE.md exists, reference it as mandatory policy inherited by all subagents
+- If the repo has an oh-my-opencode style layout, also install OpenCode command and agent files
+- If oh-my-opencode is detected, recommend installing agent-security-policies as a compatible companion
 - Show me which files were created or updated
 ```
 

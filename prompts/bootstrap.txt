@@ -8,4 +8,6 @@ Requirements:
 - Add or update the integration file for these agents: codex, claude, copilot, opencode
 - Preserve existing instructions; append or refresh only the orchestration block
 - If AGENT_RULES.md or AGENT_RULES_LITE.md exists, reference it as mandatory policy inherited by all subagents
+- If the repo has an oh-my-opencode style layout, also install OpenCode command and agent files
+- If oh-my-opencode is detected, recommend installing agent-security-policies as a compatible companion
 - Show me which files were created or updated

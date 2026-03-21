@@ -81,6 +81,15 @@ Agent-specific integration:
 - GitHub Copilot -> `.github/copilot-instructions.md`
 - OpenCode -> `.claude/rules/multi-agent.md`
 
+When an `oh-my-opencode`-style layout is detected, the installer also adds:
+
+- `.opencode/command/task-force.md`
+- `.claude/agents/sdf-command.md`
+- `.claude/agents/valkyrie-scan.md`
+- `.claude/agents/valkyrie-forge.md`
+- `.claude/agents/valkyrie-check.md`
+- `.claude/agents/barrier-review.md`
+
 ## Agent-first workflow
 
 This repository supports two installation styles:
@@ -89,6 +98,28 @@ This repository supports two installation styles:
 - `npx`: you run the installer directly
 
 The preferred workflow for agent-centric environments is `agent-native`.
+
+## oh-my-opencode compatibility
+
+The installer auto-detects an `oh-my-opencode`-style project by checking for:
+
+- `.opencode/`
+- `.claude/agents/`
+- `.claude/rules/`
+
+When detected, it installs the OpenCode-specific command and subagent files in addition to the normal rule file.
+
+If that layout is present, the installer also recommends:
+
+```bash
+npx agent-security-policies --agent opencode --skills --omo
+```
+
+That pairing is intentional:
+
+- `agent-orchestration-profiles` handles delegation, topology, and ownership
+- `agent-security-policies` handles security rules, scans, and security agents
+- `oh-my-opencode` handles discovery of rules, commands, skills, and agents
 
 ## Project layout
 

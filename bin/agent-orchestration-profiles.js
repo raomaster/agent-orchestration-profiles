@@ -9,6 +9,13 @@ const PACKAGE_NAME = "agent-orchestration-profiles";
 const SUPPORTED_AGENTS = ["codex", "claude", "copilot", "opencode"];
 const MARKER_START = "<!-- agent-orchestration-profiles -->";
 const MARKER_END = "<!-- /agent-orchestration-profiles -->";
+const OMO_AGENT_FILES = [
+  "sdf-command.md",
+  "valkyrie-scan.md",
+  "valkyrie-forge.md",
+  "valkyrie-check.md",
+  "barrier-review.md",
+];
 
 function printHelp() {
   console.log(`${PACKAGE_NAME}
@@ -24,6 +31,10 @@ Options:
   --target PATH   Target project directory (default: current directory)
   --list          Show supported agents and generated files
   --help          Show this help
+
+Behavior:
+  - Detects oh-my-opencode style layouts automatically
+  - When oh-my-opencode is detected, installs OpenCode-specific commands and agents
 `);
 }
 
@@ -150,6 +161,38 @@ function installBaseBundle(target) {
   return results;
 }
 
+function detectOhMyOpenCode(target) {
+  const checks = [
+    path.join(target, ".opencode"),
+    path.join(target, ".claude", "agents"),
+    path.join(target, ".claude", "rules"),
+  ];
+  return checks.some((candidate) => fs.existsSync(candidate));
+}
+
+function installOhMyOpenCodeBundle(target) {
+  const results = [];
+  results.push([
+    ".opencode/command/task-force.md",
+    writeFileIfMissing(
+      path.join(target, ".opencode", "command", "task-force.md"),
+      readTemplate("oh-my-opencode", "command", "task-force.md")
+    ),
+  ]);
+
+  for (const fileName of OMO_AGENT_FILES) {
+    results.push([
+      `.claude/agents/${fileName}`,
+      writeFileIfMissing(
+        path.join(target, ".claude", "agents", fileName),
+        readTemplate("oh-my-opencode", "agents", fileName)
+      ),
+    ]);
+  }
+
+  return results;
+}
+
 function integrationBlock(agent) {
   if (agent === "codex") {
     return `Read and follow MULTI_AGENT_RULES.md for delegation and orchestration.
@@ -220,6 +263,14 @@ function printList() {
   console.log("- MULTI_AGENT_RULES.md");
   console.log("- topology/sdf_topology.yaml");
   console.log("- commands/task-force.md");
+  console.log("");
+  console.log("oh-my-opencode extras when detected:");
+  console.log("- .opencode/command/task-force.md");
+  console.log("- .claude/agents/sdf-command.md");
+  console.log("- .claude/agents/valkyrie-scan.md");
+  console.log("- .claude/agents/valkyrie-forge.md");
+  console.log("- .claude/agents/valkyrie-check.md");
+  console.log("- .claude/agents/barrier-review.md");
 }
 
 function main() {
@@ -242,14 +293,27 @@ function main() {
   }
 
   ensureDir(args.target);
+  const isOhMyOpenCode = detectOhMyOpenCode(args.target);
   const results = [...installBaseBundle(args.target)];
   for (const agent of args.agents) {
     results.push(installAgent(args.target, agent));
   }
+  if (isOhMyOpenCode) {
+    results.push(...installOhMyOpenCodeBundle(args.target));
+  }
 
   console.log(`Installed ${PACKAGE_NAME} into ${args.target}`);
+  if (isOhMyOpenCode) {
+    console.log("- detected: oh-my-opencode compatible layout");
+  }
   for (const [file, status] of results) {
     console.log(`- ${status}: ${file}`);
+  }
+  if (isOhMyOpenCode) {
+    console.log("");
+    console.log("Recommended companion install:");
+    console.log("- npx agent-security-policies --agent opencode --skills --omo");
+    console.log("This will add security rules, skills, commands, and the Aegis security agent without conflicting with the orchestration bundle.");
   }
 }
 
