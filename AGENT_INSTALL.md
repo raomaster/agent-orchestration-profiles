@@ -4,6 +4,14 @@ This project can be installed directly by a coding agent, without `npx` and with
 
 Its intended focus is stack installation by current agent, not just orchestration in isolation.
 
+The canonical remote entrypoint is now the project README:
+
+```text
+Install and configure by following the instructions here https://raw.githubusercontent.com/raomaster/agent-orchestration-profiles/main/README.md
+```
+
+Use this file as supporting detail, not as the primary bootstrap target.
+
 The agent should:
 
 1. Fetch this repository or read its published files.

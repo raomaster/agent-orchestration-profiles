@@ -10,3 +10,4 @@
 - OpenCode-specific command and subagent templates
 - Companion recommendation for `agent-security-policies` in oh-my-opencode environments
 - Stack-aware install mode with agent-appropriate `agent-security-policies` profiles
+- README refocused to match the oh-my-opencode "For LLM Agents" remote-install pattern

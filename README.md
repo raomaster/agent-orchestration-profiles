@@ -9,6 +9,97 @@ This project is intentionally separate from `agent-security-policies`.
 
 Use both together when you want secure multi-agent execution.
 
+## Just Skip Reading This Readme
+
+### Alternative: Let an LLM Agent do it
+
+Paste this into a fresh agent session:
+
+```text
+Install and configure by following the instructions here https://raw.githubusercontent.com/raomaster/agent-orchestration-profiles/main/README.md
+```
+
+### For LLM Agents
+
+If you are an LLM agent helping a user install this project, your job is to install the right stack for the current client, not just copy orchestration files blindly.
+
+#### Step 1: Detect the current client
+
+Choose the best match from the current environment:
+
+- `Codex`
+- `Claude Code`
+- `GitHub Copilot`
+- `OpenCode`
+
+Look for project markers when useful:
+
+- `AGENTS.md` suggests Codex
+- `CLAUDE.md` suggests Claude Code
+- `.github/copilot-instructions.md` suggests GitHub Copilot
+- `.opencode/`, `.claude/rules/`, or `.claude/agents/` suggests OpenCode or `oh-my-opencode`
+
+#### Step 2: Install the orchestration bundle
+
+Copy these files from this repository into the target project:
+
+- `templates/MULTI_AGENT_RULES.md` -> `MULTI_AGENT_RULES.md`
+- `templates/topology/sdf_topology.yaml` -> `topology/sdf_topology.yaml`
+- `templates/commands/task-force.md` -> `commands/task-force.md`
+
+Then install the client-specific integration file:
+
+- Codex -> `AGENTS.md`
+- Claude Code -> `CLAUDE.md`
+- GitHub Copilot -> `.github/copilot-instructions.md`
+- OpenCode -> `.claude/rules/multi-agent.md`
+
+Preserve existing user content. Only append or refresh the managed orchestration block.
+
+#### Step 3: Install the security companion stack
+
+Install `agent-security-policies` with the right default:
+
+- Codex -> `lite`
+- GitHub Copilot -> `lite`
+- Claude Code -> `full`
+- OpenCode -> `full`
+
+If the project uses `oh-my-opencode`, install the OpenCode security stack with:
+
+```bash
+npx agent-security-policies --agent opencode --skills --omo
+```
+
+Otherwise use the agent-specific profile:
+
+```bash
+npx agent-security-policies --agent <agent> --profile <lite|full>
+```
+
+If command execution is blocked, tell the user the exact command and explain why.
+
+#### Step 4: Install `oh-my-opencode` extras when detected
+
+If the project looks like `oh-my-opencode`, also install:
+
+- `.opencode/command/task-force.md`
+- `.claude/agents/sdf-command.md`
+- `.claude/agents/valkyrie-scan.md`
+- `.claude/agents/valkyrie-forge.md`
+- `.claude/agents/valkyrie-check.md`
+- `.claude/agents/barrier-review.md`
+
+#### Step 5: Final report
+
+Tell the user:
+
+- which client you detected
+- which files were created or updated
+- whether `agent-security-policies` was installed or only recommended
+- whether `oh-my-opencode` extras were installed
+- any blockers
+
 ## Why this exists
 
 Most agent setups document safety rules, but leave collaboration vague. This project gives you a portable orchestration layer that answers:
@@ -26,22 +117,11 @@ Most agent setups document safety rules, but leave collaboration vague. This pro
 - GitHub Copilot
 - OpenCode
 
-## Install
+## Installation
 
-### Agent-native install
+### For Humans
 
-If your coding agent can read GitHub repos or fetch raw files, you can install this project by giving it a single bootstrap instruction instead of running `npx`.
-
-Use the prompt in [AGENT_INSTALL.md](AGENT_INSTALL.md) or [prompts/bootstrap.txt](prompts/bootstrap.txt).
-
-Short version:
-
-```text
-Install agent-orchestration-profiles from https://github.com/raomaster/agent-orchestration-profiles into this project.
-Copy the shared bundle, update the integration files for codex/claude/copilot/opencode, preserve existing instructions, and make all subagents inherit AGENT_RULES.md when present.
-```
-
-### npx
+#### npx
 
 ```bash
 npx agent-orchestration-profiles --all
@@ -52,7 +132,7 @@ npx agent-orchestration-profiles --agent opencode --target /path/to/project
 npx agent-orchestration-profiles --list
 ```
 
-### Local clone
+#### Local clone
 
 ```bash
 git clone https://github.com/raomaster/agent-orchestration-profiles.git
@@ -60,7 +140,7 @@ cd agent-orchestration-profiles
 ./install.sh --all --target /path/to/project
 ```
 
-### Windows PowerShell
+#### Windows PowerShell
 
 ```powershell
 git clone https://github.com/raomaster/agent-orchestration-profiles.git
@@ -92,14 +172,14 @@ When an `oh-my-opencode`-style layout is detected, the installer also adds:
 - `.claude/agents/valkyrie-check.md`
 - `.claude/agents/barrier-review.md`
 
-## Agent-first workflow
+### For LLM Agents
 
-This repository supports two installation styles:
+Use the remote bootstrap prompt in [prompts/bootstrap.txt](prompts/bootstrap.txt) or send the agent directly to this README.
 
-- `agent-native`: you paste a bootstrap prompt into the coding agent and it performs the install itself
-- `npx`: you run the installer directly
+Supporting docs:
 
-The preferred workflow for agent-centric environments is `agent-native`.
+- [AGENT_INSTALL.md](AGENT_INSTALL.md)
+- [prompts/bootstrap.txt](prompts/bootstrap.txt)
 
 ## Stack-aware install
 
