@@ -1,280 +1,271 @@
 # agent-orchestration-profiles
 
-Portable multi-agent orchestration profiles for coding agents.
+Preset-driven secure multi-agent orchestration for coding agents.
 
-This project is intentionally separate from `agent-security-policies`.
+This repository is the stack installer and workflow layer.
 
-- `agent-security-policies` defines safety, security, and review constraints.
-- `agent-orchestration-profiles` defines coordination, delegation, ownership, and synchronization.
+- `agent-orchestration-profiles` defines topology, delegation, ownership, recovery commands, and install presets.
+- `agent-security-policies` remains the security companion and source of truth for security rules, profiles, and skills.
 
-Use both together when you want secure multi-agent execution.
+Use both together when you want a professional AI-assisted SSDLC without turning every project into a heavyweight harness.
 
-## Just Skip Reading This Readme
-
-### Alternative: Let an LLM Agent do it
+## Install Through an Agent
 
 Paste this into a fresh agent session:
 
 ```text
-Install and configure by following the instructions here https://raw.githubusercontent.com/raomaster/agent-orchestration-profiles/main/README.md
+Install and configure agent-orchestration-profiles in this repository by following:
+https://raw.githubusercontent.com/raomaster/agent-orchestration-profiles/main/README.md
+
+Requirements:
+- detect the current client automatically
+- use preset pro unless I specify another preset
+- preserve existing user instructions with managed blocks only
+- install the security companion stack when possible
+- report created or updated files and any blockers
 ```
 
-### For LLM Agents
+## Quick Install
 
-If you are an LLM agent helping a user install this project, your job is to install the right stack for the current client, not just copy orchestration files blindly.
-
-#### Step 1: Detect the current client
-
-Choose the best match from the current environment:
-
-- `Codex`
-- `Claude Code`
-- `GitHub Copilot`
-- `OpenCode`
-
-Look for project markers when useful:
-
-- `AGENTS.md` suggests Codex
-- `CLAUDE.md` suggests Claude Code
-- `.github/copilot-instructions.md` suggests GitHub Copilot
-- `.opencode/`, `.claude/rules/`, or `.claude/agents/` suggests OpenCode or `oh-my-opencode`
-
-#### Step 2: Install the orchestration bundle
-
-Copy these files from this repository into the target project:
-
-- `templates/MULTI_AGENT_RULES.md` -> `MULTI_AGENT_RULES.md`
-- `templates/topology/sdf_topology.yaml` -> `topology/sdf_topology.yaml`
-- `templates/commands/task-force.md` -> `commands/task-force.md`
-
-Then install the client-specific integration file:
-
-- Codex -> `AGENTS.md`
-- Claude Code -> `CLAUDE.md`
-- GitHub Copilot -> `.github/copilot-instructions.md`
-- OpenCode -> `.claude/rules/multi-agent.md`
-
-Preserve existing user content. Only append or refresh the managed orchestration block.
-
-#### Step 3: Install the security companion stack
-
-Install `agent-security-policies` with the right default:
-
-- Codex -> `lite`
-- GitHub Copilot -> `lite`
-- Claude Code -> `full`
-- OpenCode -> `full`
-
-If the project uses `oh-my-opencode`, install the OpenCode security stack with:
+### Daily default
 
 ```bash
-npx agent-security-policies --agent opencode --skills --omo
+npx --yes github:raomaster/agent-orchestration-profiles install --agent auto --preset pro
 ```
 
-Otherwise use the agent-specific profile:
+### Low-cost setup
 
 ```bash
-npx agent-security-policies --agent <agent> --profile <lite|full>
+npx --yes github:raomaster/agent-orchestration-profiles install --agent auto --preset lite
 ```
 
-If command execution is blocked, tell the user the exact command and explain why.
+### Full adaptive setup
 
-#### Step 4: Install `oh-my-opencode` extras when detected
+```bash
+npx --yes github:raomaster/agent-orchestration-profiles install --agent auto --preset full
+```
 
-If the project looks like `oh-my-opencode`, also install:
+### Explicit presets
 
-- `.opencode/command/task-force.md`
-- `.claude/agents/sdf-command.md`
-- `.claude/agents/valkyrie-scan.md`
-- `.claude/agents/valkyrie-forge.md`
-- `.claude/agents/valkyrie-check.md`
-- `.claude/agents/barrier-review.md`
+```bash
+npx --yes github:raomaster/agent-orchestration-profiles install --agent opencode --preset full-opencode
+npx --yes github:raomaster/agent-orchestration-profiles install --agent claude --preset full-portable
+npx --yes github:raomaster/agent-orchestration-profiles install --agent opencode --preset hybrid
+```
 
-#### Step 5: Final report
+### Planning only
 
-Tell the user:
+```bash
+npx --yes github:raomaster/agent-orchestration-profiles install --agent auto --preset pro --dry-run --explain
+```
 
-- which client you detected
-- which files were created or updated
-- whether `agent-security-policies` was installed or only recommended
-- whether `oh-my-opencode` extras were installed
-- any blockers
+These commands use GitHub directly so they work before the package is published on npm.
 
-## Why this exists
+## Presets
 
-Most agent setups document safety rules, but leave collaboration vague. This project gives you a portable orchestration layer that answers:
+| Preset | Purpose | Security default | Workflow shape |
+| --- | --- | --- | --- |
+| `lite` | Cheap starter for daily edits | `lite` where available | `task-force` + `verify-change` |
+| `pro` | Recommended default | `lite` on all supported agents | planning, recovery, worktrees, verification, handoff |
+| `full` | Adaptive alias | follows resolved target preset | `full-opencode` on OpenCode, `full-portable` elsewhere |
+| `full-opencode` | Complete OpenCode stack | OpenCode-focused companion path | `pro` command pack mirrored into `.opencode/command/` plus SDF subagents |
+| `full-portable` | Complete portable workflow | `standard` + skills where supported | `pro` plus planning and branch-finishing commands |
+| `hybrid` | Experimental OpenCode + portable workflow | OpenCode-focused companion path | `full-opencode` plus portable planning and finish commands |
 
-- when to stay single-agent
-- when to spawn subagents
-- how to assign ownership
-- how to avoid overlapping writes
-- how to close and review a task force cleanly
+`full` is always adaptive:
 
-## Supported agents
+- `OpenCode` -> `full-opencode`
+- `Codex`, `Claude Code`, `GitHub Copilot` -> `full-portable`
+
+When `--agent auto` cannot detect a clear client, the installer writes integration files for all supported agents.
+
+## Supported Agents
 
 - Codex
 - Claude Code
 - GitHub Copilot
 - OpenCode
 
-## Installation
+## What Gets Installed
 
-### For Humans
-
-#### npx
-
-```bash
-npx agent-orchestration-profiles --all
-npx agent-orchestration-profiles --agent codex --with-security auto
-npx agent-orchestration-profiles --agent claude --with-security full
-npx agent-orchestration-profiles --agent codex,claude
-npx agent-orchestration-profiles --agent opencode --target /path/to/project
-npx agent-orchestration-profiles --list
-```
-
-#### Local clone
-
-```bash
-git clone https://github.com/raomaster/agent-orchestration-profiles.git
-cd agent-orchestration-profiles
-./install.sh --all --target /path/to/project
-```
-
-#### Windows PowerShell
-
-```powershell
-git clone https://github.com/raomaster/agent-orchestration-profiles.git
-cd agent-orchestration-profiles
-.\install.ps1 --all --target C:\path\to\project
-```
-
-## What gets installed
-
-Shared bundle:
+### Shared bundle
 
 - `MULTI_AGENT_RULES.md`
 - `topology/sdf_topology.yaml`
-- `commands/task-force.md`
+- `commands/*.md` according to the selected preset
 
-Agent-specific integration:
+### Agent integration files
 
 - Codex -> `AGENTS.md`
 - Claude Code -> `CLAUDE.md`
 - GitHub Copilot -> `.github/copilot-instructions.md`
 - OpenCode -> `.claude/rules/multi-agent.md`
 
-When an `oh-my-opencode`-style layout is detected, the installer also adds:
+### OpenCode bundle for `full-opencode` and `hybrid`
 
-- `.opencode/command/task-force.md`
+- `.opencode/command/*.md` mirrored from the active command pack
 - `.claude/agents/sdf-command.md`
 - `.claude/agents/valkyrie-scan.md`
 - `.claude/agents/valkyrie-forge.md`
 - `.claude/agents/valkyrie-check.md`
 - `.claude/agents/barrier-review.md`
+- `.claude/agents/archive-note.md`
 
-### For LLM Agents
+The installer also adds the OpenCode bundle when it detects an existing `oh-my-opencode` layout.
 
-Use the remote bootstrap prompt in [prompts/bootstrap.txt](prompts/bootstrap.txt) or send the agent directly to this README.
+## Command Packs
 
-Supporting docs:
+### `lite`
 
-- [AGENT_INSTALL.md](AGENT_INSTALL.md)
-- [prompts/bootstrap.txt](prompts/bootstrap.txt)
+- `task-force`
+- `verify-change`
 
-## Stack-aware install
+### `pro`
 
-This project can act as a stack installer, not just an orchestration installer.
+- `task-force`
+- `checkpoint`
+- `checkpoint-list`
+- `rollback`
+- `rollback-file`
+- `worktree-start`
+- `worktree-finish`
+- `verify-change`
+- `threat-model`
+- `handoff`
 
-When `--with-security` is enabled, it also tries to install `agent-security-policies` with an agent-appropriate profile:
+### `full-portable`
 
-- `codex` -> `lite` by default
-- `copilot` -> `lite` by default
-- `claude` -> `full` by default
-- `opencode` -> `full` by default
-- `opencode` with `oh-my-opencode` detected -> `--agent opencode --skills --omo`
+Everything in `pro`, plus:
 
-Examples:
+- `plan-change`
+- `execute-plan`
+- `finish-branch`
 
-```bash
-# Codex stack: orchestration + security lite
-npx agent-orchestration-profiles --agent codex --with-security auto
+### `full-opencode`
 
-# Claude stack: orchestration + security full
-npx agent-orchestration-profiles --agent claude --with-security auto
+Everything in `pro`, mirrored into `.opencode/command/` and paired with the SDF agent catalog.
 
-# OpenCode + oh-my-opencode stack
-npx agent-orchestration-profiles --agent opencode --with-security auto
+### `hybrid`
+
+Everything in `full-portable`, plus the `full-opencode` mirrored command and agent bundle.
+
+See `docs/commands.md` for details.
+
+## Security Companion Behavior
+
+This project does not replace `agent-security-policies`.
+
+- `lite` prefers `agent-security-policies` lite where available.
+- `pro` installs `agent-security-policies` in `lite` mode on all supported agents.
+- `full-portable` prefers `standard` + `--skills` where supported.
+- `full-opencode` and `hybrid` use the OpenCode-oriented companion path when available and otherwise print the exact recommended follow-up command.
+
+If the companion install cannot run, the installer falls back to a recommendation instead of failing the orchestration install.
+
+See `docs/integrations.md` for the current contract and limitations.
+
+## Copy-Paste Prompts for Agents
+
+### Generic `pro`
+
+```text
+Install and configure agent-orchestration-profiles in this repository by following:
+https://raw.githubusercontent.com/raomaster/agent-orchestration-profiles/main/README.md
+
+Requirements:
+- detect the current client automatically
+- install preset pro
+- preserve existing user instructions using managed blocks only
+- install the security companion stack when possible
+- report created or updated files and blockers
 ```
 
-## oh-my-opencode compatibility
+### OpenCode `full-opencode`
 
-The installer auto-detects an `oh-my-opencode`-style project by checking for:
+```text
+Install and configure agent-orchestration-profiles in this repository by following:
+https://raw.githubusercontent.com/raomaster/agent-orchestration-profiles/main/README.md
 
-- `.opencode/`
-- `.claude/agents/`
-- `.claude/rules/`
-
-When detected, it installs the OpenCode-specific command and subagent files in addition to the normal rule file.
-
-If that layout is present, the installer also recommends:
-
-```bash
-npx agent-security-policies --agent opencode --skills --omo
+Target client: OpenCode
+Preset: full-opencode
+Requirements:
+- install the SDF orchestration bundle
+- install the mirrored .opencode command pack
+- install the SDF subagent catalog
+- preserve existing user instructions using managed blocks only
+- install the security companion stack when possible
+- report created or updated files and blockers
 ```
 
-That pairing is intentional:
+### Claude Code `full-portable`
 
-- `agent-orchestration-profiles` handles delegation, topology, and ownership
-- `agent-security-policies` handles security rules, scans, and security agents
-- `oh-my-opencode` handles discovery of rules, commands, skills, and agents
+```text
+Install and configure agent-orchestration-profiles in this repository by following:
+https://raw.githubusercontent.com/raomaster/agent-orchestration-profiles/main/README.md
 
-## Project layout
+Target client: Claude Code
+Preset: full-portable
+Requirements:
+- install the portable full workflow stack
+- preserve existing user instructions using managed blocks only
+- install the security companion stack when possible
+- report created or updated files and blockers
+```
+
+### Codex `lite`
+
+```text
+Install and configure agent-orchestration-profiles in this repository by following:
+https://raw.githubusercontent.com/raomaster/agent-orchestration-profiles/main/README.md
+
+Target client: Codex
+Preset: lite
+Requirements:
+- keep the setup lightweight
+- preserve existing user instructions using managed blocks only
+- install the security companion stack when possible
+- report created or updated files and blockers
+```
+
+## Design Rules
+
+- Conservative spawning by default
+- Explicit ownership before delegation
+- `SDF-Command` keeps the critical path
+- `Valkyrie-Scan`, `Valkyrie-Forge`, `Valkyrie-Check`, `Barrier-Review`, and `Archive-Note` stay role-pure
+- Recovery commands are built into `pro` and above
+- Managed block updates never replace user-authored instructions outside the managed section
+- Security is inherited from `AGENT_RULES.md` or `AGENT_RULES_LITE.md` whenever present
+
+## Project Layout
 
 ```text
 .
 ├── bin/agent-orchestration-profiles.js
+├── docs/
+├── prompts/
+├── src/
 ├── templates/
 │   ├── MULTI_AGENT_RULES.md
-│   ├── topology/sdf_topology.yaml
-│   └── commands/task-force.md
-├── install.sh
+│   ├── commands/*.md
+│   ├── oh-my-opencode/agents/*.md
+│   ├── oh-my-opencode/command/*.md
+│   └── topology/sdf_topology.yaml
+├── AGENT_INSTALL.md
+├── CHANGELOG.md
 ├── install.ps1
+├── install.sh
 └── README.md
 ```
 
-## Design rules
+## Documentation
 
-- Conservative spawning by default
-- Explicit ownership before delegation
-- Critical path stays in `SDF-Command`
-- Compatibility with `AGENT_RULES.md` and `AGENT_RULES_LITE.md`
-- Non-destructive updates using managed blocks where possible
+- `AGENT_INSTALL.md` - agent-native installation contract
+- `docs/presets.md` - exact preset semantics
+- `docs/commands.md` - command pack reference
+- `docs/integrations.md` - `agent-security-policies`, `oh-my-opencode`, and portable workflow notes
+- `CHANGELOG.md` - release history
 
-## Example
+## Latest Changes
 
-```bash
-npx agent-orchestration-profiles --agent codex,copilot --target .
-```
-
-This installs the shared orchestration bundle and updates:
-- `AGENTS.md`
-- `.github/copilot-instructions.md`
-
-## Publish
-
-```bash
-git init
-git add .
-git commit -m "Initial commit"
-git branch -M main
-git remote add origin git@github.com:raomaster/agent-orchestration-profiles.git
-git push -u origin main
-```
-
-## Next steps
-
-Recommended companion install:
-
-```bash
-npx agent-security-policies --all
-```
+See `CHANGELOG.md` for the full release log. The current release introduces presets, recovery commands, an OpenCode bundle, and tests for the new installer core.
