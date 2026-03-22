@@ -30,36 +30,40 @@ Requirements:
 ### Daily default
 
 ```bash
-npx --yes github:raomaster/agent-orchestration-profiles install --agent auto --preset pro
+npx agent-orchestration-profiles install --agent auto --preset pro
 ```
 
 ### Low-cost setup
 
 ```bash
-npx --yes github:raomaster/agent-orchestration-profiles install --agent auto --preset lite
+npx agent-orchestration-profiles install --agent auto --preset lite
 ```
 
 ### Full adaptive setup
 
 ```bash
-npx --yes github:raomaster/agent-orchestration-profiles install --agent auto --preset full
+npx agent-orchestration-profiles install --agent auto --preset full
 ```
 
 ### Explicit presets
 
 ```bash
-npx --yes github:raomaster/agent-orchestration-profiles install --agent opencode --preset full-opencode
-npx --yes github:raomaster/agent-orchestration-profiles install --agent claude --preset full-portable
-npx --yes github:raomaster/agent-orchestration-profiles install --agent opencode --preset hybrid
+npx agent-orchestration-profiles install --agent opencode --preset full-opencode
+npx agent-orchestration-profiles install --agent claude --preset full-portable
+npx agent-orchestration-profiles install --agent opencode --preset hybrid
 ```
 
 ### Planning only
 
 ```bash
-npx --yes github:raomaster/agent-orchestration-profiles install --agent auto --preset pro --dry-run --explain
+npx agent-orchestration-profiles install --agent auto --preset pro --dry-run --explain
 ```
 
-These commands use GitHub directly so they work before the package is published on npm.
+If you want the branch tip before the npm release lands, use:
+
+```bash
+npx --yes github:raomaster/agent-orchestration-profiles install --agent auto --preset pro
+```
 
 ## Presets
 

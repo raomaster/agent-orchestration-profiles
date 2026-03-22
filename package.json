@@ -2,6 +2,24 @@
   "name": "agent-orchestration-profiles",
   "version": "0.2.0",
   "description": "Preset-driven secure multi-agent orchestration profiles for Codex, Claude Code, GitHub Copilot, and OpenCode.",
+  "keywords": [
+    "ai",
+    "agents",
+    "orchestration",
+    "opencode",
+    "claude-code",
+    "codex",
+    "copilot",
+    "ssdlc"
+  ],
+  "homepage": "https://github.com/raomaster/agent-orchestration-profiles#readme",
+  "bugs": {
+    "url": "https://github.com/raomaster/agent-orchestration-profiles/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/raomaster/agent-orchestration-profiles.git"
+  },
   "license": "Apache-2.0",
   "type": "module",
   "bin": {
