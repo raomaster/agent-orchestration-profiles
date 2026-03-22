@@ -1,17 +1,25 @@
 {
   "name": "agent-orchestration-profiles",
-  "version": "0.1.0",
-  "description": "Portable multi-agent orchestration profiles for Codex, Claude Code, GitHub Copilot, and OpenCode.",
+  "version": "0.2.0",
+  "description": "Preset-driven secure multi-agent orchestration profiles for Codex, Claude Code, GitHub Copilot, and OpenCode.",
   "license": "Apache-2.0",
   "type": "module",
   "bin": {
     "agent-orchestration-profiles": "./bin/agent-orchestration-profiles.js"
   },
+  "scripts": {
+    "test": "node --test",
+    "test:unit": "node --test test/*.test.js",
+    "test:smoke": "node --test test/cli-smoke.test.js"
+  },
   "files": [
     "bin",
+    "docs",
     "prompts",
+    "src",
     "templates",
     "README.md",
+    "CHANGELOG.md",
     "AGENT_INSTALL.md",
     "install.sh",
     "install.ps1"
