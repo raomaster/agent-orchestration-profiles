@@ -38,6 +38,28 @@ test("full-opencode recommends OpenCode companion path when enabled", () => {
   assert.match(plan.args.join(" "), /agent-security-policies --agent opencode --skills --omo/);
 });
 
+test("full-opencode keeps OpenCode companion path for standard override", () => {
+  const plan = resolveSecurityPlan({
+    agent: "opencode",
+    preset: "full-opencode",
+    override: "standard",
+  });
+
+  assert.equal(plan.mode, "command");
+  assert.match(plan.args.join(" "), /agent-security-policies --agent opencode --skills --omo/);
+});
+
+test("full-opencode keeps OpenCode companion path for full override", () => {
+  const plan = resolveSecurityPlan({
+    agent: "opencode",
+    preset: "full-opencode",
+    override: "full",
+  });
+
+  assert.equal(plan.mode, "command");
+  assert.match(plan.args.join(" "), /agent-security-policies --agent opencode --skills --omo/);
+});
+
 test("security override off disables companion install", () => {
   const plan = resolveSecurityPlan({
     agent: "claude",

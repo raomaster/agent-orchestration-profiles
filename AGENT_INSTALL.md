@@ -37,6 +37,7 @@ https://raw.githubusercontent.com/raomaster/agent-orchestration-profiles/main/RE
 
 - `full` + `opencode` -> `full-opencode`
 - `full` + anything else -> `full-portable`
+- `full-opencode` is only valid when the resolved agent is `opencode`
 - `hybrid` on non-OpenCode agents falls back to `full-portable`
 
 ## Files to Install

@@ -59,6 +59,8 @@ npx agent-orchestration-profiles install --agent opencode --preset hybrid
 npx agent-orchestration-profiles install --agent auto --preset pro --dry-run --explain
 ```
 
+`--dry-run` prints the plan without creating directories or writing files.
+
 If you want the branch tip before the npm release lands, use:
 
 ```bash
@@ -80,6 +82,8 @@ npx --yes github:raomaster/agent-orchestration-profiles install --agent auto --p
 
 - `OpenCode` -> `full-opencode`
 - `Codex`, `Claude Code`, `GitHub Copilot` -> `full-portable`
+
+`full-opencode` is strict and requires `--agent opencode`.
 
 When `--agent auto` cannot detect a clear client, the installer writes integration files for all supported agents.
 
@@ -107,7 +111,7 @@ When `--agent auto` cannot detect a clear client, the installer writes integrati
 
 ### OpenCode bundle for `full-opencode` and `hybrid`
 
-- `.opencode/command/*.md` mirrored from the active command pack
+- `.opencode/command/*.md` mirrored from the resolved OpenCode command pack, or from the shared pack when an existing `oh-my-opencode` layout is detected
 - `.claude/agents/sdf-command.md`
 - `.claude/agents/valkyrie-scan.md`
 - `.claude/agents/valkyrie-forge.md`
@@ -147,7 +151,7 @@ Everything in `pro`, plus:
 
 ### `full-opencode`
 
-Everything in `pro`, mirrored into `.opencode/command/` and paired with the SDF agent catalog.
+Everything in `pro`, mirrored into `.opencode/command/` and paired with the SDF agent catalog. This preset is only valid for `--agent opencode`.
 
 ### `hybrid`
 

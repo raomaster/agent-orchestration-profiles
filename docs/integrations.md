@@ -14,6 +14,8 @@ Default mapping in this repository:
 - `full-portable` -> `agent-security-policies --profile standard --skills`
 - `full-opencode` and `hybrid` -> `agent-security-policies --agent opencode --skills --omo` for OpenCode
 
+When `--with-security standard` or `--with-security full` is used with OpenCode's `full-opencode` or `hybrid` presets, the installer preserves the OpenCode-specific `--omo` companion path.
+
 If the companion installer cannot run, the orchestration install still succeeds and prints the exact follow-up command or recommendation.
 
 ## `oh-my-opencode`

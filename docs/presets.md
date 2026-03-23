@@ -33,6 +33,7 @@ Complete OpenCode stack.
 - mirrored command pack in `.opencode/command/`
 - SDF subagent catalog in `.claude/agents/`
 - OpenCode-focused security follow-up path
+- requires `--agent opencode`
 
 ## `full-portable`
 

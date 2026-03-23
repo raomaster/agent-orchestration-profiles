@@ -36,3 +36,24 @@ test("parseArgs accepts explicit preset workflow and dry-run", () => {
 test("parseArgs validates preset values", () => {
   assert.throws(() => parseArgs(["install", "--preset", "unknown"]), /--preset must/);
 });
+
+test("parseArgs rejects mixing auto with explicit agents", () => {
+  assert.throws(
+    () => parseArgs(["install", "--agent", "auto,codex"]),
+    /--agent auto cannot be combined/
+  );
+});
+
+test("parseArgs rejects an empty agent list", () => {
+  assert.throws(
+    () => parseArgs(["install", "--agent", ","]),
+    /--agent requires at least one supported agent or auto/
+  );
+});
+
+test("parseArgs validates the final agent selection after --all", () => {
+  assert.throws(
+    () => parseArgs(["install", "--all", "--agent", "bogus"]),
+    /Unsupported agent\(s\): bogus/
+  );
+});

@@ -17,7 +17,8 @@ export function detectProjectContext(target) {
     claudeRulesDir: exists(target, ".claude/rules"),
   };
 
-  const isOhMyOpenCode = markers.opencodeDir || markers.claudeAgentsDir;
+  const isOhMyOpenCode =
+    markers.opencodeDir || markers.claudeAgentsDir || markers.claudeRulesDir;
 
   let detectedAgent = null;
   if (markers.opencodeDir) {

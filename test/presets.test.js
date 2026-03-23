@@ -23,3 +23,15 @@ test("hybrid falls back to full-portable outside OpenCode", () => {
     "full-portable"
   );
 });
+
+test("full-opencode requires OpenCode", () => {
+  assert.throws(
+    () =>
+      resolvePresetForAgent({
+        requestedPreset: "full-opencode",
+        agent: "claude",
+        workflow: "auto",
+      }),
+    /--preset full-opencode requires --agent opencode/
+  );
+});

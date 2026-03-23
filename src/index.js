@@ -28,7 +28,7 @@ Options:
   --workflow NAME       Workflow resolver for full: ${SUPPORTED_WORKFLOWS.join(", ")}
   --target PATH         Target project directory (default: current directory)
   --with-security MODE  Security mode: ${SUPPORTED_SECURITY_MODES.join(", ")}
-  --dry-run             Print the install plan without writing files
+  --dry-run             Print a no-write install plan
   --explain             Print preset rationale and install details
   --list                Show presets, commands, and generated files
   --help                Show this help
@@ -36,6 +36,7 @@ Options:
 Defaults:
   - install command uses --agent auto --preset pro
   - full resolves to full-opencode for OpenCode and full-portable elsewhere
+  - full-opencode requires --agent opencode; use full for adaptive behavior
   - auto with no markers installs integration files for all supported agents
 `);
 }
@@ -58,7 +59,7 @@ export function printList() {
   }
   console.log("");
   console.log("oh-my-opencode bundle:");
-  console.log("- .opencode/command/*.md mirrors the active command pack when full-opencode or hybrid is selected");
+  console.log("- .opencode/command/*.md mirrors the resolved OpenCode command pack, or the shared pack in an existing oh-my-opencode layout");
   console.log("- .claude/agents/sdf-command.md");
   console.log("- .claude/agents/valkyrie-scan.md");
   console.log("- .claude/agents/valkyrie-forge.md");

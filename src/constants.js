@@ -93,7 +93,7 @@ export const PRESET_SUMMARIES = {
   lite: "Low-cost starter with conservative orchestration and security lite.",
   pro: "Daily-driver preset with professional workflow, recovery commands, and adaptive multi-agent execution.",
   full: "Adaptive alias: OpenCode resolves to full-opencode; other agents resolve to full-portable.",
-  "full-opencode": "Complete OpenCode stack with SDF subagents, mirrored command pack, and oh-my-opencode compatibility assets.",
+  "full-opencode": "Complete OpenCode-only stack with SDF subagents, mirrored command pack, and oh-my-opencode compatibility assets.",
   "full-portable": "Portable full workflow with planning, execution, recovery, review, and branch finishing commands.",
   hybrid: "Experimental OpenCode stack that combines full-opencode assets with the portable workflow command pack.",
 };

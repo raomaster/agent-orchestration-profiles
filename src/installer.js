@@ -3,7 +3,12 @@ import path from "node:path";
 import { AGENT_FILE_MAP, OMO_AGENT_FILES, PACKAGE_NAME } from "./constants.js";
 import { detectProjectContext, resolveAgents } from "./context.js";
 import { appendManagedBlock, ensureDir, readTemplate, writeFileIfChanged } from "./fs-utils.js";
-import { collectPresetContext, describePreset, resolvePresetForAgent } from "./presets.js";
+import {
+  collectPresetContext,
+  commandFilesForPreset,
+  describePreset,
+  resolvePresetForAgent,
+} from "./presets.js";
 import { executeSecurityPlan, resolveSecurityPlan } from "./security.js";
 
 function integrationBlock(agent, preset) {
@@ -76,6 +81,34 @@ function buildSharedFileEntries(commandFiles) {
   ]);
 }
 
+function resolveOhMyOpenCodeCommandFiles(needsOhMyOpenCodeBundle, agentPresets, fallbackCommandFiles) {
+  if (!needsOhMyOpenCodeBundle) {
+    return [];
+  }
+
+  const opencodePreset = agentPresets.opencode;
+  const commandFiles = opencodePreset
+    ? commandFilesForPreset(opencodePreset)
+    : fallbackCommandFiles;
+  return buildOhMyOpenCodeCommandEntries(commandFiles);
+}
+
+function formatFileStatus(status, dryRun) {
+  if (!dryRun) {
+    return status;
+  }
+
+  if (status === "created") {
+    return "would create";
+  }
+
+  if (status === "updated") {
+    return "would update";
+  }
+
+  return status;
+}
+
 export function buildInstallPlan(args) {
   const context = detectProjectContext(args.target);
   const resolvedAgents = resolveAgents(args.agents, context);
@@ -114,9 +147,11 @@ export function buildInstallPlan(args) {
     sharedFiles,
     commandFiles: presetContext.commandFiles,
     needsOhMyOpenCodeBundle,
-    ohMyOpenCodeCommandFiles: needsOhMyOpenCodeBundle
-      ? buildOhMyOpenCodeCommandEntries(presetContext.commandFiles)
-      : [],
+    ohMyOpenCodeCommandFiles: resolveOhMyOpenCodeCommandFiles(
+      needsOhMyOpenCodeBundle,
+      agentPresets,
+      presetContext.commandFiles
+    ),
     ohMyOpenCodeAgentFiles: needsOhMyOpenCodeBundle ? buildOhMyOpenCodeAgentEntries() : [],
     securityPlans,
   };
@@ -125,7 +160,9 @@ export function buildInstallPlan(args) {
 export function installProject(args, options = {}) {
   const plan = buildInstallPlan(args);
   const writeOptions = { dryRun: args.dryRun };
-  ensureDir(args.target);
+  if (!args.dryRun) {
+    ensureDir(args.target);
+  }
 
   const results = [];
   results.push(...installTemplateFiles(args.target, plan.sharedFiles, writeOptions));
@@ -173,7 +210,11 @@ export function installProject(args, options = {}) {
 export function formatInstallReport(outcome) {
   const lines = [];
   const { args, plan, results, securityResults, packageName } = outcome;
-  lines.push(`Installed ${packageName} into ${args.target}`);
+  lines.push(
+    args.dryRun
+      ? `Planned install of ${packageName} into ${args.target}`
+      : `Installed ${packageName} into ${args.target}`
+  );
   lines.push(`- agents: ${plan.resolvedAgents.agents.join(", ")}`);
   lines.push(`- auto mode: ${plan.resolvedAgents.autoMode}`);
   lines.push(`- requested preset: ${args.preset}`);
@@ -188,7 +229,7 @@ export function formatInstallReport(outcome) {
   }
 
   for (const [file, status] of results) {
-    lines.push(`- ${status}: ${file}`);
+    lines.push(`- ${formatFileStatus(status, args.dryRun)}: ${file}`);
   }
 
   if (args.explain) {

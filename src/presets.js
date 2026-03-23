@@ -1,5 +1,8 @@
 import { PRESET_COMMANDS, PRESET_SUMMARIES } from "./constants.js";
 
+const FULL_OPENCODE_PRESET_ERROR =
+  "--preset full-opencode requires --agent opencode. Use --preset full for adaptive behavior or --preset full-portable for non-OpenCode agents.";
+
 export function resolvePresetForAgent({ requestedPreset, agent, workflow }) {
   if (requestedPreset === "full") {
     if (workflow === "portable") {
@@ -21,7 +24,15 @@ export function resolvePresetForAgent({ requestedPreset, agent, workflow }) {
     return "full-portable";
   }
 
+  if (requestedPreset === "full-opencode" && agent !== "opencode") {
+    throw new Error(FULL_OPENCODE_PRESET_ERROR);
+  }
+
   return requestedPreset;
+}
+
+export function commandFilesForPreset(preset) {
+  return [...(PRESET_COMMANDS[preset] ?? [])];
 }
 
 export function collectPresetContext(agentPresets) {
@@ -29,7 +40,7 @@ export function collectPresetContext(agentPresets) {
   const commandFiles = new Set();
 
   for (const preset of actualPresets) {
-    const commands = PRESET_COMMANDS[preset] ?? [];
+    const commands = commandFilesForPreset(preset);
     for (const command of commands) {
       commandFiles.add(command);
     }

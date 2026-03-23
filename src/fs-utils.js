@@ -25,11 +25,11 @@ export function escapeRegExp(value) {
 
 export function writeFileIfChanged(filePath, content, options = {}) {
   const { dryRun = false } = options;
-  ensureDir(path.dirname(filePath));
   const exists = fs.existsSync(filePath);
 
   if (!exists) {
     if (!dryRun) {
+      ensureDir(path.dirname(filePath));
       fs.writeFileSync(filePath, content, "utf8");
     }
     return "created";
@@ -41,6 +41,7 @@ export function writeFileIfChanged(filePath, content, options = {}) {
   }
 
   if (!dryRun) {
+    ensureDir(path.dirname(filePath));
     fs.writeFileSync(filePath, content, "utf8");
   }
   return "updated";
@@ -48,10 +49,10 @@ export function writeFileIfChanged(filePath, content, options = {}) {
 
 export function appendManagedBlock(filePath, block, options = {}) {
   const { dryRun = false } = options;
-  ensureDir(path.dirname(filePath));
   const managedBlock = `${MARKER_START}\n${block.trimEnd()}\n${MARKER_END}\n`;
   if (!fs.existsSync(filePath)) {
     if (!dryRun) {
+      ensureDir(path.dirname(filePath));
       fs.writeFileSync(filePath, managedBlock, "utf8");
     }
     return "created";
@@ -71,6 +72,7 @@ export function appendManagedBlock(filePath, block, options = {}) {
   }
 
   if (!dryRun) {
+    ensureDir(path.dirname(filePath));
     fs.writeFileSync(filePath, next, "utf8");
   }
   return "updated";

@@ -77,6 +77,12 @@ function applySecurityOverride(settings, override) {
     };
   }
 
+  if (settings?.args && (override === "standard" || override === "full")) {
+    return {
+      ...settings,
+    };
+  }
+
   if (override === "lite") {
     return {
       mode: "command",

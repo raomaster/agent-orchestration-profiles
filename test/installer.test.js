@@ -24,6 +24,40 @@ test("auto agent falls back to all supported agents when no markers exist", () =
   assert.equal(plan.agentPresets.opencode, "full-opencode");
   assert.equal(plan.agentPresets.claude, "full-portable");
   assert.equal(plan.needsOhMyOpenCodeBundle, true);
+  assert.ok(plan.commandFiles.includes("plan-change"));
+  assert.equal(
+    plan.ohMyOpenCodeCommandFiles.some(
+      ({ relativePath }) => relativePath === ".opencode/command/plan-change.md"
+    ),
+    false
+  );
+});
+
+test("claude rules marker enables oh-my-opencode detection", () => {
+  const target = makeTempDir();
+  fs.mkdirSync(path.join(target, ".claude", "rules"), { recursive: true });
+
+  const plan = buildInstallPlan({
+    target,
+    agents: ["auto"],
+    preset: "pro",
+    workflow: "auto",
+    withSecurity: "off",
+  });
+
+  assert.equal(plan.context.detectedAgent, "opencode");
+  assert.equal(plan.context.isOhMyOpenCode, true);
+  assert.equal(plan.needsOhMyOpenCodeBundle, true);
+  assert.ok(
+    plan.ohMyOpenCodeCommandFiles.some(
+      ({ relativePath }) => relativePath === ".opencode/command/task-force.md"
+    )
+  );
+  assert.ok(
+    plan.ohMyOpenCodeAgentFiles.some(
+      ({ relativePath }) => relativePath === ".claude/agents/archive-note.md"
+    )
+  );
 });
 
 test("installProject writes pro files and preserves managed block behavior", () => {
@@ -76,8 +110,58 @@ test("installProject writes the OpenCode mirrored bundle for full-opencode", () 
   );
 });
 
-test("installProject dry-run leaves the target directory untouched", () => {
+test("full-opencode fails fast for non-OpenCode agents", () => {
   const target = makeTempDir();
+
+  assert.throws(
+    () =>
+      buildInstallPlan({
+        target,
+        agents: ["claude"],
+        preset: "full-opencode",
+        workflow: "auto",
+        withSecurity: "off",
+      }),
+    /--preset full-opencode requires --agent opencode/
+  );
+});
+
+test("auto full-opencode fails when no OpenCode marker exists", () => {
+  const target = makeTempDir();
+
+  assert.throws(
+    () =>
+      buildInstallPlan({
+        target,
+        agents: ["auto"],
+        preset: "full-opencode",
+        workflow: "auto",
+        withSecurity: "off",
+      }),
+    /--preset full-opencode requires --agent opencode/
+  );
+});
+
+test("auto full-opencode succeeds when OpenCode marker exists", () => {
+  const target = makeTempDir();
+  fs.mkdirSync(path.join(target, ".opencode"), { recursive: true });
+
+  const plan = buildInstallPlan({
+    target,
+    agents: ["auto"],
+    preset: "full-opencode",
+    workflow: "auto",
+    withSecurity: "off",
+  });
+
+  assert.deepEqual(plan.resolvedAgents.agents, ["opencode"]);
+  assert.equal(plan.agentPresets.opencode, "full-opencode");
+});
+
+test("installProject dry-run leaves the target directory untouched", () => {
+  const root = makeTempDir();
+  const target = path.join(root, "nested", "project");
+
   installProject(
     {
       target,
@@ -93,6 +177,8 @@ test("installProject dry-run leaves the target directory untouched", () => {
     }
   );
 
+  assert.equal(fs.existsSync(path.join(root, "nested")), false);
+  assert.equal(fs.existsSync(target), false);
   assert.equal(fs.existsSync(path.join(target, "CLAUDE.md")), false);
   assert.equal(fs.existsSync(path.join(target, "commands", "task-force.md")), false);
 });

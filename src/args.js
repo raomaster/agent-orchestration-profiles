@@ -56,7 +56,15 @@ export function parseArgs(argv) {
       if (!value) {
         throw new Error("--agent requires a comma-separated value or auto");
       }
-      args.agents = normalizeAgentList(value);
+      const agents = normalizeAgentList(value);
+      if (agents.length === 0) {
+        throw new Error("--agent requires at least one supported agent or auto");
+      }
+      if (agents.includes("auto") && agents.length > 1) {
+        throw new Error("--agent auto cannot be combined with other agents");
+      }
+      args.all = false;
+      args.agents = agents;
       index += 1;
       continue;
     }
@@ -137,13 +145,19 @@ export function parseArgs(argv) {
     throw new Error(`--with-security must be one of: ${SUPPORTED_SECURITY_MODES.join(", ")}`);
   }
 
-  if (!args.all) {
-    const unknownAgents = args.agents.filter(
-      (agent) => agent !== "auto" && !SUPPORTED_AGENTS.includes(agent)
-    );
-    if (unknownAgents.length > 0) {
-      throw new Error(`Unsupported agent(s): ${unknownAgents.join(", ")}`);
-    }
+  if (args.agents.length === 0) {
+    throw new Error("--agent requires at least one supported agent or auto");
+  }
+
+  if (args.agents.includes("auto") && args.agents.length > 1) {
+    throw new Error("--agent auto cannot be combined with other agents");
+  }
+
+  const unknownAgents = args.agents.filter(
+    (agent) => agent !== "auto" && !SUPPORTED_AGENTS.includes(agent)
+  );
+  if (unknownAgents.length > 0) {
+    throw new Error(`Unsupported agent(s): ${unknownAgents.join(", ")}`);
   }
 
   return args;

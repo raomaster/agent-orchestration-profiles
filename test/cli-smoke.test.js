@@ -38,7 +38,8 @@ test("CLI smoke install for codex pro without security", () => {
 });
 
 test("CLI dry-run for adaptive full shows resolved presets", () => {
-  const target = makeTempDir();
+  const root = makeTempDir();
+  const target = path.join(root, "nested", "project");
   const result = spawnSync(
     process.execPath,
     [
@@ -61,6 +62,35 @@ test("CLI dry-run for adaptive full shows resolved presets", () => {
   );
 
   assert.equal(result.status, 0, result.stderr);
+  assert.match(result.stdout, /Planned install of agent-orchestration-profiles/);
   assert.match(result.stdout, /resolved presets: codex -> full-portable/);
+  assert.match(result.stdout, /would create: AGENTS.md/);
+  assert.equal(fs.existsSync(target), false);
+});
+
+test("CLI rejects full-opencode for non-OpenCode agents", () => {
+  const target = makeTempDir();
+  const result = spawnSync(
+    process.execPath,
+    [
+      "bin/agent-orchestration-profiles.js",
+      "install",
+      "--agent",
+      "claude",
+      "--preset",
+      "full-opencode",
+      "--with-security",
+      "off",
+      "--target",
+      target,
+    ],
+    {
+      cwd: path.join(process.cwd()),
+      encoding: "utf8",
+    }
+  );
+
+  assert.equal(result.status, 1);
+  assert.match(result.stderr, /--preset full-opencode requires --agent opencode/);
   assert.equal(fs.existsSync(path.join(target, "AGENTS.md")), false);
 });
